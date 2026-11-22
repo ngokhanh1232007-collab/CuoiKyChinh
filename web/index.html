@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Vé Xem Phim | Java OOP & MySQL</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- HEADER / NAVIGATION -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                        <line x1="7" y1="2" x2="7" y2="22"></line>
+                        <line x1="17" y1="2" x2="17" y2="22"></line>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <line x1="2" y1="7" x2="7" y2="7"></line>
+                        <line x1="2" y1="17" x2="7" y2="17"></line>
+                        <line x1="17" y1="17" x2="22" y2="17"></line>
+                        <line x1="17" y1="7" x2="22" y2="7"></line>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-title">CINEMA BOOKING</h1>
+                    <span class="brand-sub">Java OOP &bull; MySQL Database &bull; Clean Architecture</span>
+                </div>
+            </div>
+
+            <nav class="nav-tabs" id="main-nav">
+                <button class="nav-btn active" data-tab="tab-movies">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>1. Phim</span>
+                </button>
+                <button class="nav-btn" data-tab="tab-booking">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>2. Đặt vé & Sơ đồ</span>
+                </button>
+                <button class="nav-btn" data-tab="tab-payment">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <span>3. Thanh toán</span>
+                    <span class="badge-counter" id="unpaid-badge" style="display:none;">0</span>
+                </button>
+                <button class="nav-btn" data-tab="tab-customers">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>4. Khách hàng</span>
+                </button>
+                <button class="nav-btn" data-tab="tab-tickets">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>5. Vé & Doanh thu</span>
+                </button>
+            </nav>
+
+            <div class="header-status">
+                <span class="status-dot"></span>
+                <span class="status-label">MySQL Connected</span>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="app-main">
+
+            <!-- ============================================================== -->
+            <!-- TAB 1: DANH SÁCH PHIM -->
+            <!-- ============================================================== -->
+            <section id="tab-movies" class="tab-pane active">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Danh Sách Phim</h2>
+                        <p class="panel-desc">Kho phim chiếu rạp đa dạng thể loại. Kiểm thử tính năng hiển thị và chặn đặt vé phim ngừng chiếu.</p>
+                    </div>
+                    <div class="panel-controls">
+                        <div class="search-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="movie-search-input" placeholder="Tìm kiếm theo tên phim, thể loại...">
+                        </div>
+                        <div class="filter-group">
+                            <button class="filter-btn active" data-filter="all">Tất cả (<span id="count-all-movies">8</span>)</button>
+                            <button class="filter-btn" data-filter="showing">Đang chiếu (<span id="count-showing-movies">6</span>)</button>
+                            <button class="filter-btn" data-filter="stopped">Ngừng chiếu (<span id="count-stopped-movies">2</span>)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="movies-grid" id="movies-grid">
+                    <!-- Danh sách card phim nạp động từ API -->
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!-- TAB 2: ĐẶT VÉ & SƠ ĐỒ GHẾ -->
+            <!-- ============================================================== -->
+            <section id="tab-booking" class="tab-pane">
+                <div class="booking-container">
+                    <!-- KHUNG TRÁI: SƠ ĐỒ RẠP VÀ CHỌN SUẤT CHIẾU -->
+                    <div class="booking-cinema-card">
+                        <div class="booking-selectors-row">
+                            <div class="form-field-group">
+                                <label for="booking-customer-select">1. Chọn Khách hàng</label>
+                                <div class="select-with-btn">
+                                    <select id="booking-customer-select">
+                                        <option value="">-- Vui lòng chọn khách hàng --</option>
+                                    </select>
+                                    <button class="btn btn-secondary btn-icon-only" id="btn-quick-add-cust" title="Thêm khách hàng nhanh">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="booking-movie-select">2. Chọn Phim</label>
+                                <select id="booking-movie-select">
+                                    <option value="">-- Chọn phim xem --</option>
+                                </select>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="booking-showtime-select">3. Chọn Suất chiếu</label>
+                                <select id="booking-showtime-select" disabled>
+                                    <option value="">-- Chọn suất chiếu --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- KHU VỰC SƠ ĐỒ GHẾ TRỰC QUAN -->
+                        <div class="cinema-hall" id="cinema-hall">
+                            <div class="hall-header">
+                                <div class="screen-wrapper">
+                                    <div class="screen-bar"></div>
+                                    <div class="screen-text">MÀN HÌNH CHIẾU / SCREEN</div>
+                                </div>
+                            </div>
+
+                            <!-- LƯỚI GHẾ 44 CHỖ -->
+                            <div class="seat-map-wrapper">
+                                <div class="seat-map" id="seat-map">
+                                    <!-- Render tự động qua JS: Hàng A, B, C, D, E, F -->
+                                    <div class="map-placeholder">
+                                        Vui lòng chọn Suất chiếu ở trên để hiển thị sơ đồ 44 ghế phòng chiếu.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BẢNG CHÚ THÍCH LOẠI GHẾ (LEGEND) -->
+                            <div class="seat-legend">
+                                <div class="legend-item">
+                                    <div class="seat-sample seat-normal"></div>
+                                    <div class="legend-desc">
+                                        <strong>Ghế Thường</strong>
+                                        <span>Hàng A, B (+0đ)</span>
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="seat-sample seat-vip"></div>
+                                    <div class="legend-desc">
+                                        <strong>Ghế VIP</strong>
+                                        <span>Hàng C, D, E (+20.000đ)</span>
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="seat-sample seat-couple"></div>
+                                    <div class="legend-desc">
+                                        <strong>Ghế Đôi</strong>
+                                        <span>Hàng F (+50.000đ)</span>
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="seat-sample seat-selected"></div>
+                                    <div class="legend-desc">
+                                        <strong>Đang chọn</strong>
+                                        <span>Nhấp để đổi</span>
+                                    </div>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="seat-sample seat-booked"></div>
+                                    <div class="legend-desc">
+                                        <strong>Đã đặt</strong>
+                                        <span>Bị khóa</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KHUNG PHẢI: CHI TIẾT GIÁ VÉ & XÁC NHẬN ĐẶT -->
+                    <div class="booking-summary-card">
+                        <div class="card-title-row">
+                            <h3 class="card-title">Chi Tiết Đặt Vé</h3>
+                            <span class="badge badge-primary" id="available-seats-badge">Trống: 0/44</span>
+                        </div>
+
+                        <div class="summary-details" id="summary-details">
+                            <div class="empty-selection-notice">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                <p>Chọn khách hàng, suất chiếu và nhấp một ghế trên sơ đồ để xem tính giá chi tiết.</p>
+                            </div>
+                        </div>
+
+                        <!-- BẢNG TÍNH GIÁ CHI TIẾT KHI ĐÃ CHỌN GHẾ -->
+                        <div class="pricing-breakdown" id="pricing-breakdown" style="display: none;">
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">Giá vé cơ bản:</span>
+                                <span class="breakdown-val" id="val-base-price">0 đ</span>
+                            </div>
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">Phụ phí ghế (<span id="val-seat-type">Thường</span>):</span>
+                                <span class="breakdown-val" id="val-surcharge">+0 đ</span>
+                            </div>
+                            <div class="breakdown-row">
+                                <span class="breakdown-label">Chính sách ưu đãi:</span>
+                                <span class="breakdown-val text-blue" id="val-policy-name">Khách thường</span>
+                            </div>
+                            <div class="breakdown-divider"></div>
+                            <div class="breakdown-row total-row">
+                                <span class="breakdown-label">TỔNG TIỀN:</span>
+                                <span class="breakdown-total" id="val-final-price">0 đ</span>
+                            </div>
+
+                            <button class="btn btn-primary btn-block btn-lg" id="btn-confirm-booking">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span>Xác Nhận Đặt Vé</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!-- TAB 3: THANH TOÁN VÉ -->
+            <!-- ============================================================== -->
+            <section id="tab-payment" class="tab-pane">
+                <div class="payment-layout">
+                    <!-- BẢNG VÉ CHƯA THANH TOÁN -->
+                    <div class="table-card">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Danh Sách Vé Chưa Thanh Toán</h2>
+                                <p class="panel-desc">Nhấp chọn vé để xem chi tiết và thực hiện thanh toán qua các phương thức.</p>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" id="btn-refresh-unpaid">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                </svg>
+                                <span>Làm mới</span>
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table" id="unpaid-tickets-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã vé</th>
+                                        <th>Khách hàng</th>
+                                        <th>Phim</th>
+                                        <th>Suất chiếu</th>
+                                        <th>Ghế</th>
+                                        <th>Giá vé</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Render vé chưa thanh toán -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- KHUNG HÌNH THỨC THANH TOÁN -->
+                    <div class="payment-action-card" id="payment-action-card">
+                        <h3 class="card-title">Cổng Thanh Toán</h3>
+                        <p class="card-sub">Áp dụng Strategy Pattern `PaymentMethod` (Tiền mặt, Chuyển khoản Vietcombank, Ví MoMo)</p>
+
+                        <div class="selected-ticket-box" id="payment-ticket-box">
+                            <div class="empty-selection-notice">
+                                <p>Vui lòng chọn một vé từ danh sách bên trái để tiến hành thanh toán.</p>
+                            </div>
+                        </div>
+
+                        <div class="payment-methods-group" id="payment-methods-group" style="display: none;">
+                            <label class="payment-method-item active">
+                                <input type="radio" name="payMethod" value="CASH" checked>
+                                <div class="method-content">
+                                    <div class="method-title">Tiền mặt tại quầy</div>
+                                    <div class="method-desc">Thu ngân nhận tiền mặt trực tiếp tại quầy vé</div>
+                                </div>
+                            </label>
+
+                            <label class="payment-method-item">
+                                <input type="radio" name="payMethod" value="BANK_TRANSFER">
+                                <div class="method-content">
+                                    <div class="method-title">Chuyển khoản Vietcombank</div>
+                                    <div class="method-desc">STK: <strong>1234567890</strong> - Ngân hàng VCB</div>
+                                </div>
+                            </label>
+
+                            <label class="payment-method-item">
+                                <input type="radio" name="payMethod" value="E_WALLET">
+                                <div class="method-content">
+                                    <div class="method-title">Ví điện tử MoMo</div>
+                                    <div class="method-desc">SĐT MoMo: <strong>0909888777</strong></div>
+                                </div>
+                            </label>
+
+                            <button class="btn btn-primary btn-block btn-lg" id="btn-execute-payment">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                                </svg>
+                                <span>Xác Nhận Thanh Toán</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!-- TAB 4: KHÁCH HÀNG -->
+            <!-- ============================================================== -->
+            <section id="tab-customers" class="tab-pane">
+                <div class="customers-layout">
+                    <!-- DANH SÁCH KHÁCH HÀNG -->
+                    <div class="table-card">
+                        <div class="panel-header">
+                            <div>
+                                <h2 class="panel-title">Hồ Sơ Khách Hàng</h2>
+                                <p class="panel-desc">Phân loại đối tượng theo 3 nhóm để áp dụng chính sách giá (Thường: 100%, Sinh viên: -20%, VIP: -15%).</p>
+                            </div>
+                            <span class="badge badge-dark" id="customer-total-count">Tổng: 5 khách hàng</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table" id="customers-table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã KH</th>
+                                        <th>Họ và tên</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Email</th>
+                                        <th>Nhóm khách hàng</th>
+                                        <th>Chính sách giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Render danh sách khách hàng -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- FORM THÊM KHÁCH HÀNG MỚI -->
+                    <div class="form-card">
+                        <h3 class="card-title">Thêm Khách Hàng Mới</h3>
+                        <p class="card-sub">Kiểm tra tính hợp lệ và không trùng số điện thoại (BookingException).</p>
+
+                        <form id="add-customer-form">
+                            <div class="form-field-group">
+                                <label for="cust-name">Họ và tên <span class="required">*</span></label>
+                                <input type="text" id="cust-name" placeholder="VD: Hoàng Văn Nam" required>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="cust-phone">Số điện thoại <span class="required">*</span></label>
+                                <input type="tel" id="cust-phone" placeholder="VD: 0918112233" required>
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="cust-email">Địa chỉ Email</label>
+                                <input type="email" id="cust-email" placeholder="VD: nam.hoang@gmail.com">
+                            </div>
+
+                            <div class="form-field-group">
+                                <label for="cust-type">Loại khách hàng <span class="required">*</span></label>
+                                <select id="cust-type" required>
+                                    <option value="NORMAL">Khách thường (Giá gốc +0%)</option>
+                                    <option value="STUDENT">Sinh viên (Giảm 20%)</option>
+                                    <option value="VIP">Thành viên VIP (Giảm 15%)</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span>Thêm Khách Hàng</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!-- TAB 5: VÉ & DOANH THU -->
+            <!-- ============================================================== -->
+            <section id="tab-tickets" class="tab-pane">
+                <!-- 4 STATS CARDS -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper icon-dark">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">Tổng số vé đặt</span>
+                            <span class="stat-value" id="stat-total-tickets">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper icon-blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">Đã thanh toán</span>
+                            <span class="stat-value text-blue" id="stat-paid-tickets">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper icon-slate">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">Chưa thanh toán</span>
+                            <span class="stat-value" id="stat-unpaid-tickets">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card highlight">
+                        <div class="stat-icon-wrapper icon-blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-label">Tổng doanh thu thực tế</span>
+                            <span class="stat-value text-blue" id="stat-total-revenue">0 đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BẢNG TẤT CẢ VÉ -->
+                <div class="table-card mt-24">
+                    <div class="panel-header">
+                        <div>
+                            <h2 class="panel-title">Toàn Bộ Vé Xem Phim</h2>
+                            <p class="panel-desc">Theo dõi thông tin chi tiết từng vé, trạng thái thanh toán và doanh thu thực nhận.</p>
+                        </div>
+                        <div class="filter-group">
+                            <button class="filter-btn active" data-ticket-filter="all">Tất cả</button>
+                            <button class="filter-btn" data-ticket-filter="paid">Đã thanh toán</button>
+                            <button class="filter-btn" data-ticket-filter="unpaid">Chưa thanh toán</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table" id="all-tickets-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã vé</th>
+                                    <th>Khách hàng</th>
+                                    <th>Nhóm KH</th>
+                                    <th>Phim</th>
+                                    <th>Phòng</th>
+                                    <th>Suất chiếu</th>
+                                    <th>Ghế</th>
+                                    <th>Giá vé</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Render danh sách tất cả vé -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL: BIÊN LAI VÉ (TICKET RECEIPT MODAL) -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="ticket-modal">
+        <div class="modal-box receipt-box">
+            <div class="receipt-header">
+                <div class="receipt-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <h3 class="receipt-title">ĐẶT VÉ THÀNH CÔNG!</h3>
+                <p class="receipt-subtitle">Thông tin vé đã được lưu an toàn vào cơ sở dữ liệu MySQL</p>
+            </div>
+
+            <div class="ticket-stub" id="ticket-receipt-content">
+                <!-- Nội dung vé in chi tiết -->
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="btn-close-ticket-modal">Đóng & Tiếp Tục</button>
+                <button class="btn btn-primary" id="btn-pay-now-modal">Thanh Toán Ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- MODAL: THÊM NHANH KHÁCH HÀNG -->
+    <!-- ============================================================== -->
+    <div class="modal-backdrop" id="quick-cust-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Thêm Khách Hàng Nhanh</h3>
+                <button class="modal-close-btn" id="btn-close-quick-cust">&times;</button>
+            </div>
+            <form id="quick-cust-form">
+                <div class="form-field-group">
+                    <label>Họ và tên <span class="required">*</span></label>
+                    <input type="text" id="quick-cust-name" placeholder="VD: Trần Văn Bình" required>
+                </div>
+                <div class="form-field-group">
+                    <label>Số điện thoại <span class="required">*</span></label>
+                    <input type="tel" id="quick-cust-phone" placeholder="VD: 0988776655" required>
+                </div>
+                <div class="form-field-group">
+                    <label>Email</label>
+                    <input type="email" id="quick-cust-email" placeholder="VD: binh@gmail.com">
+                </div>
+                <div class="form-field-group">
+                    <label>Loại khách hàng <span class="required">*</span></label>
+                    <select id="quick-cust-type" required>
+                        <option value="NORMAL">Khách thường</option>
+                        <option value="STUDENT">Sinh viên (Giảm 20%)</option>
+                        <option value="VIP">Thành viên VIP (Giảm 15%)</option>
+                    </select>
+                </div>
+                <div class="modal-actions mt-16">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-quick-cust">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu Khách Hàng</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

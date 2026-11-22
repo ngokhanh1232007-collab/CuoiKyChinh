@@ -1,0 +1,4 @@
+KH001|Nguyen Van An|0912345678|an@gmail.com|NORMAL
+KH002|Tran Thi Binh|0987654321|binh@edu.vn|STUDENT
+KH003|Le Minh Cuong|0909111222|cuong@gmail.com|VIP
+KH004|Ngo Hoang Khanh|0862690080|ngokhanh1232007@gmail.com|NORMAL
